@@ -1,36 +1,147 @@
-# Algonquin Pet Store (On Steroids)
-Welcome to the Algonquin Pet Store (On Steroids) application.
+# CST8915 – Lab 8 Submission (Full-stack Cloud-native Development)
 
-This sample demo app consists of a group of containerized microservices that can be easily deployed into a Kubernetes cluster. This is meant to show a realistic scenario using a polyglot architecture, event-driven design, and common open source back-end services (eg - RabbitMQ, MongoDB). The application also leverages OpenAI's models to generate product descriptions and images. This can be done using either [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/overview) or [OpenAI](https://openai.com/).
+## Student
 
-This application is inspired by Azure Kubernetes Service (AKS) quickstart demo [Azure Kubernetes Service (AKS) Docs](https://learn.microsoft.com/en-us/azure/aks/).
+- **Name:** Ilyas Zazai
+- **Course:** CST8915 – Full-stack Cloud-native Development
+- **Lab:** Lab 8
 
-> [!NOTE]
-> This is not meant to be an example of perfect code to be used in production, but more about showing a realistic application running in kubernetes. 
+---
 
-## Architecture
+## Demo Video
 
-The application has the following services: 
+- `<ADD_YOUR_YOUTUBE_LINK_HERE>`
 
-| Service | Description | Github Repo | Docker Image |
-| --- | --- | --- | --- |
-| `store-front` | Web app for customers to place orders (Vue.js) | [store-front-L8](https://github.com/ramymohamed10/store-front-L8) | [ramymohamed/store-front-l8](https://hub.docker.com/r/ramymohamed/store-front-l8) |
-| `store-admin` | Web app used by store employees to view orders in queue and manage products (Vue.js) | [store-admin-L8](https://github.com/ramymohamed10/store-admin-L8) | [ramymohamed/store-admin-l8](https://hub.docker.com/r/ramymohamed/store-admin-l8) |
-| `order-service` | This service is used for placing orders (Javascript) | [order-service-L8](https://github.com/ramymohamed10/order-service-L8) | [ramymohamed/order-service-l8](https://hub.docker.com/r/ramymohamed/order-service-l8) |
-| `product-service` | This service is used to perform CRUD operations on products (Rust) | [product-service-L8](https://github.com/ramymohamed10/product-service-L8) | [ramymohamed/product-service-l8](https://hub.docker.com/r/ramymohamed/product-service-l8) |
-| `makeline-service` | This service handles processing orders from the queue and completing them (Golang) | [makeline-service-L8](https://github.com/ramymohamed10/makeline-service-L8) | [ramymohamed/makeline-service-l8](https://hub.docker.com/r/ramymohamed/makeline-service-l8) |
-| `ai-service` | Optional service for adding generative text and graphics creation (Python) | [ai-service-L8](https://github.com/ramymohamed10/ai-service-L8) | [ramymohamed/ai-service-l8](https://hub.docker.com/r/ramymohamed/ai-service-l8) |
-| `rabbitmq` | RabbitMQ for an order queue | [rabbitmq](https://github.com/docker-library/rabbitmq) | [rabbitmq:3-management](https://hub.docker.com/_/rabbitmq) |
-| `mongodb` | MongoDB instance for persisted data | [mongodb](https://github.com/docker-library/mongo) | [mongo:4.2](https://hub.docker.com/_/mongo) |
-| `virtual-customer` | Simulates order creation on a scheduled basis (Rust) | [virtual-customer-L8](https://github.com/ramymohamed10/virtual-customer-L8) | [ramymohamed/virtual-customer-l8](https://hub.docker.com/r/ramymohamed/virtual-customer-l8) |
-| `virtual-worker` | Simulates order completion on a scheduled basis (Rust) | [virtual-worker-L8](https://github.com/ramymohamed10/virtual-worker-L8) | [ramymohamed/virtual-worker-l8](https://hub.docker.com/r/ramymohamed/virtual-worker-l8) |
+---
+
+## Repository
+
+- `<ADD_YOUR_GITHUB_REPOSITORY_LINK_HERE>`
+
+---
+
+## Overview
+
+This lab focused on deploying the Algonquin Pet Store application to Azure Kubernetes Service (AKS) using Kubernetes manifests. The environment included multiple microservices such as `store-front`, `store-admin`, `order-service`, `product-service`, `makeline-service`, `ai-service`, `mongodb`, and `rabbitmq`.
+
+The objective of the lab was to deploy the application using AKS, verify service creation, and prepare the required deployment files for Task 1 and Task 2. During the setup process, Azure subscription restrictions affected the available VM sizes and quota in some regions, so alternative AKS configurations had to be tested.
+
+---
+
+## Work Completed
+
+### 1. Repository Preparation
+- Cloned the Lab 8 repository locally.
+- Replaced the `secrets.yaml` file with my own local copy.
+- Protected the secret file from being pushed publicly by using `.gitignore`.
+- Created the following required files:
+  - `aps-all-in-one-Task1.yaml`
+  - `aps-all-in-one-Task2.yaml`
+
+### 2. Azure and AKS Setup
+- Signed in to Azure using Azure CLI.
+- Created a resource group:
+  - `AlgonquinPetStoreRG`
+- Attempted AKS deployment in different configurations because of subscription VM-size and quota limitations.
+- Successfully created an AKS cluster in `centralus` with:
+  - Cluster name: `AlgonquinPetStoreCluster`
+  - Node count: `1`
+  - VM size: `Standard_B2ps_v2`
+- Connected `kubectl` to the AKS cluster and verified node readiness.
+
+### 3. Kubernetes Deployment
+- Applied:
+  - `config-maps.yaml`
+  - `secrets.yaml`
+  - `aps-all-in-one.yaml`
+- Verified that Kubernetes resources were created.
+- Confirmed that some infrastructure services started successfully:
+  - `mongodb`
+  - `rabbitmq`
+
+### 4. Deployment Issues Observed
+During deployment, application pods did not fully run successfully. Some containers showed:
+- `ErrImagePull`
+- `CrashLoopBackOff`
+- `Error`
+- `Init:0/1`
+
+The main application services that had issues included:
+- `ai-service`
+- `makeline-service`
+- `order-service`
+- `product-service`
+- `store-admin`
+- `store-front`
+
+A likely reason was platform/image compatibility and deployment-image issues, while the official MongoDB and RabbitMQ containers were able to start successfully.
+
+---
+
+## Current Status
+
+At the time of this draft:
+- The AKS cluster was successfully created and connected.
+- Kubernetes manifests were applied.
+- Core stateful services (`mongodb` and `rabbitmq`) were running.
+- Some custom application containers failed and still require further troubleshooting.
+- Cloud resources were prepared for cleanup to avoid unnecessary charges.
+
+---
+
+## Task 1 File
+
+`aps-all-in-one-Task1.yaml` was created as the Task 1 submission file. It will be updated with the final working image references and deployment changes after troubleshooting is completed.
+
+---
+
+## Task 2 File
+
+`aps-all-in-one-Task2.yaml` was created as the Task 2 submission file. It will be updated later with:
+- MongoDB replica configuration
+- Headless service configuration
+- Persistent volume settings
+- RabbitMQ persistent storage configuration
+
+---
+
+## Design / Troubleshooting Notes
+
+- Azure subscription restrictions affected which VM sizes could be used in each region.
+- The default AKS VM size was not allowed in `eastus`.
+- A second AKS deployment in `centralus` succeeded with an allowed VM size.
+- `kubectl` initially pointed to the Docker Desktop Kubernetes context, so the kubeconfig had to be corrected to use the AKS context.
+- After deployment, the running status of MongoDB and RabbitMQ showed that the Kubernetes environment itself was working, but several application containers still needed image or compatibility fixes.
+
+---
+
+## Cleanup
+
+To avoid charges, Azure resources can be deleted with:
+
+```bash
+az group delete --name AlgonquinPetStoreRG --yes --no-wait
+```
+
+---
+
+## Files for Final Submission
+
+Later, the final submission repository should include:
+- `README.md`
+- `Deployment Files/aps-all-in-one-Task1.yaml`
+- `Deployment Files/aps-all-in-one-Task2.yaml`
+- `Deployment Files/admin-tasks.yaml`
+- `Deployment Files/config-maps.yaml`
+
+Do **not** upload:
+- `Deployment Files/secrets.yaml`
+
+---
+
+## Conclusion
+
+This lab established the Azure Kubernetes Service environment and deployed the Lab 8 application manifests. The AKS cluster was created successfully, Kubernetes resources were applied, and the supporting services were partially operational. Additional troubleshooting is still needed to make all custom application services run successfully and to complete the final Task 1 and Task 2 deployment files.
 
 
-![Logical Application Architecture Diagram](assets/Algonquin%20Pet%20Store%20On%20Steroids.png)
-
-## Run the app on Azure Kubernetes Service (AKS)
-
-You can use the kubernetes YAML files provided in the [Deployment Files](./Deployment%20Files/) folder to deploy the app to an AKS cluster.
-
-
-
+*AI is used for documentation*
