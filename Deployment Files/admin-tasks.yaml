@@ -16,10 +16,10 @@ spec:
         "kubernetes.io/os": linux
       containers:
         - name: virtual-customer
-          image: ramymohamed/virtual-customer-l8:latest
+          image: ilyaszazai/virtual-customer-l8:latest
           env:
             - name: ORDER_SERVICE_URL
-              value: http://order-service:3000/
+              value: "http://order-service:3000/"
             - name: ORDERS_PER_HOUR
               value: "200"
           resources:
@@ -48,10 +48,10 @@ spec:
         "kubernetes.io/os": linux
       containers:
         - name: virtual-worker
-          image: ramymohamed/virtual-worker-l8:latest
+          image: ilyaszazai/virtual-worker-l8:latest
           env:
             - name: MAKELINE_SERVICE_URL
-              value: http://makeline-service:3001
+              value: "http://makeline-service:3001"
             - name: ORDERS_PER_HOUR
               value: "50"
           resources:

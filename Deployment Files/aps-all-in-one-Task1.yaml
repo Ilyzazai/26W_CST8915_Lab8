@@ -1,6 +1,10 @@
 # ============================================================
 # aps-all-in-one-Task1.yaml
 # Task 1: All service images replaced with ilyaszazai's Docker Hub images
+# FIXES APPLIED:
+#   1. mongosh -> mongo in MongoDB liveness probe (mongo:4.2 uses mongo, not mongosh)
+#   2. makeline-service memory: 6Mi/20Mi -> 50Mi/128Mi (was OOMKilled)
+#   3. product-service memory: 1Mi/20Mi -> 50Mi/128Mi (was OOMKilled)
 # ============================================================
 
 # StatefulSet for MongoDB (uses official image - no change needed)
@@ -37,11 +41,13 @@ spec:
           livenessProbe:
             exec:
               command:
-                - mongosh
+                - mongo          # FIX 1: was "mongosh" — mongo:4.2 only has "mongo"
                 - --eval
-                - db.runCommand('ping').ok
-            initialDelaySeconds: 5
-            periodSeconds: 5
+                - "db.runCommand('ping').ok"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
 ---
 # Service to expose MongoDB
 apiVersion: v1
@@ -256,10 +262,10 @@ spec:
           resources:
             requests:
               cpu: 1m
-              memory: 6Mi
+              memory: 50Mi   # FIX 2: was 6Mi — too low, caused OOMKill
             limits:
               cpu: 5m
-              memory: 20Mi
+              memory: 128Mi  # FIX 2: was 20Mi — too low, caused OOMKill
           startupProbe:
             httpGet:
               path: /health
@@ -323,10 +329,10 @@ spec:
           resources:
             requests:
               cpu: 1m
-              memory: 1Mi
+              memory: 50Mi   # FIX 3: was 1Mi — way too low, caused OOMKill
             limits:
               cpu: 2m
-              memory: 20Mi
+              memory: 128Mi  # FIX 3: was 20Mi — too low, caused OOMKill
           readinessProbe:
             httpGet:
               path: /health
