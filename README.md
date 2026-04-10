@@ -7,7 +7,7 @@
 
 ## Demo Video
 
-[[Click here to watch the demo video](https://www.youtube.com/watch?v=ppCVGV7NTas)]
+https://www.youtube.com/watch?v=ppCVGV7NTas
 
 ---
 
